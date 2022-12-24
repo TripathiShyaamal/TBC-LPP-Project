@@ -15,7 +15,7 @@ public:
     vector<vector<double>> Constraint_Cofficient;
     vector<double> Resource;
 
-    void Selecion(void);
+    void Selection(void);
     void Set_Objective_Cofficient(void);
     void Set_Constraint_Cofficient(void);
     void Set_Feasibility();
@@ -27,20 +27,20 @@ public:
     void Display_Variable_Feasibility_After_Standard(void);
 };
 
-void Question ::Selecion()
+void Question ::Selection()
 {
     cout << "\nWhich type (Max/Min)       :  ";
     cin >> Type;
-    cout << "Entre No of variable (n)   :  ";
+    cout << "Enter No of variable (n)   :  ";
     cin >> No_Of_Variable;
-    cout << "Entre No of Constrains (m) :  ";
+    cout << "Enter No of Constrains (m) :  ";
     cin >> No_Of_Constraint;
 }
 
 void Question ::Set_Objective_Cofficient()
 {
     Objective_Cofficient.resize(No_Of_Variable);
-    cout << "Entre cofficient of Objective equation : ";
+    cout << "Enter cofficient of Objective equation : ";
     for (int i = 0; i < No_Of_Variable; i++)
     {
         cin >> Objective_Cofficient[i];
@@ -65,15 +65,21 @@ void Question ::Set_Constraint_Cofficient()
     for (int i = 0; i < No_Of_Constraint; i++)
     {
         Constraint_Cofficient[i].resize(No_Of_Variable);
-        cout << "Entre Constraint " << i + 1 << " Cofficient : ";
+        cout << "Enter Constraint " << i + 1 << " Cofficient : ";
         for (int j = 0; j < No_Of_Variable; j++)
         {
             cin >> Constraint_Cofficient[i][j];
         }
-        cout << "Condition (=,<=,>=) : ";
+        cout << "Condition (<=,>=) : ";
         cin >> Constraint_Condition[i];
         cout << "Resourse : ";
         cin >> Resource[i];
+
+        while (Constraint_Condition[i] == ">=" && Resource[i] > 0)
+        {
+            cout << "Resorce must negative i.e (condition >=) Entre again :";
+            cin >> Resource[i];
+        }
     }
 }
 
@@ -115,7 +121,7 @@ void Question ::Display_Variable_Feasibility()
 
 void Question ::Convert_Objective_Standard_Form()
 {
-    if (Type == "min" || Type == "Min")
+    if (Type == "min" || Type == "Min" || Type == "MIN")
     {
         Type = "Max";
         for (int i = 0; i < Objective_Cofficient.size(); i++)
@@ -152,14 +158,13 @@ void Question ::Convert_Constraint_Standard_Form()
         if (Constraint_Condition[i] == ">=")
         {
             Constraint_Cofficient[i][No_Of_Variable - No_Of_Slack_Surplus + i] = -1;
-            // for (int j = 0; j < No_Of_Variable; j++)
-            // {
-            //     Constraint_Cofficient[i][j] = Constraint_Cofficient[i][j] * -1;
-            //     Resource[i] = Resource[i] * -1;
-            // }
+            for (int j = 0; j < No_Of_Variable; j++)
+            {
+                if (Constraint_Cofficient[i][j] != 0)
+                    Constraint_Cofficient[i][j] = Constraint_Cofficient[i][j] * -1;
+            }
+            Resource[i] = Resource[i] * -1;
         }
-
-        Constraint_Condition[i] = "=";
     }
 }
 
@@ -175,7 +180,7 @@ int main()
     cout << "\n For Simplex method Only (Constraint <= type only )" << endl;
 
     Question f;
-    f.Selecion();
+    f.Selection();
     f.Set_Objective_Cofficient();
     f.Set_Constraint_Cofficient();
     f.Set_Feasibility();
@@ -185,12 +190,11 @@ int main()
     f.Display_Variable_Feasibility();
     cout << "\n*******************************************************************************\n\n";
     cout << "\n\n\n*******************************************************************************\n";
-    cout<<"STANDARD FORM :\n\n";
+    cout << "STANDARD FORM :\n\n";
     f.Convert_Objective_Standard_Form();
     f.Display_Objective_Cofficient();
     f.Convert_Constraint_Standard_Form();
     f.Display_Constraint_Cofficient();
     f.Display_Variable_Feasibility_After_Standard();
     cout << "\n*******************************************************************************\n\n";
-
 }
